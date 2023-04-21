@@ -23,7 +23,7 @@ public class CSVLoaderTest {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        HashMap<String, List<CryptoValue>> loadedValues = loader.loadedValues;
+        HashMap<String, List<CryptoValue>> loadedValues = loader.getLoadedValues();
 
         // Then
         assertNotNull(loadedValues);

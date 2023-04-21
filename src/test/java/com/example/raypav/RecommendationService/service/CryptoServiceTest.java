@@ -32,29 +32,74 @@ public class CryptoServiceTest {
     @Test
     public void whenCallingGetAllCryptoDataReturnsRightCryptoData() throws IOException {
         // Given
-        HashMap<String, List<CryptoValue>> loadedValues = populateLoadedValues();
+        HashMap<String, List<CryptoValue>> loadedValues = populateLoadedValuesForOneCrypto();
         when(csvLoader.getLoadedValues()).thenReturn(loadedValues);
 
         // When
         List<CryptoData> result = cryptoService.getAllCryptoData();
 
         // Then
-        assertResultForGetAllCrytoData(result);
+        assertResultForGetAllCryptoData(result);
     }
 
-    private static void assertResultForGetAllCrytoData(List<CryptoData> result) {
+    @Test
+    public void whenCallingGetCryptoDataForOneCryptoReturnsRightCryptoData() {
+        // Given
+        HashMap<String, List<CryptoValue>> loadedValues = populateLoadedValuesForMoreCryptos();
+        when(csvLoader.getLoadedValues()).thenReturn(loadedValues);
+
+        // When
+        CryptoData result = cryptoService.getCryptoDataForOneCrypto("BTC");
+
+        // Then
+        assertNotNull(result);
+        assertSingleCryptoData(result);
+    }
+
+    //TO DO finish tests
+    @Test
+    public void getCryptoWithHighestRangeForDay() {
+//        // Given
+//        HashMap<String, List<CryptoValue>> loadedValues = populateLoadedValuesForMoreCryptos();
+//        when(csvLoader.getLoadedValues()).thenReturn(loadedValues);
+//
+//        // When
+//        CryptoData result = cryptoService.getCryptoWithHighestRangeForDay("2023-04-20");
+//
+//        // Then
+//        assertNotNull(result);
+//        assertSingleCryptoDataWithHighestRangeForADay(result);
+
+    }
+
+    private static void assertResultForGetAllCryptoData(List<CryptoData> result) {
         assertNotNull(result);
         assertThat(result.size()).isEqualTo(1);
-        assertThat(result.get(0).getCrypto()).isEqualTo( "BTC");
-        assertThat(result.get(0).getMin()).isEqualTo( 0.298);
-        assertThat(result.get(0).getMax()).isEqualTo( 0.434);
-        assertThat(result.get(0).getOldest()).isEqualTo(LocalDate.parse("2023-03-31"));
-        assertThat(result.get(0).getNewest()).isEqualTo(LocalDate.parse("2023-04-20"));
-        assertThat(result.get(0).getRange()).isEqualTo(0.45637583892617456);
-        assertThat(result.get(0).getCurrency()).isEqualTo( "USD");
+        CryptoData data = result.get(0);
+        assertSingleCryptoData(data);
     }
 
-    private HashMap<String, List<CryptoValue>> populateLoadedValues() {
+    private static void assertSingleCryptoData(CryptoData data) {
+        assertThat(data.getCrypto()).isEqualTo( "BTC");
+        assertThat(data.getMin()).isEqualTo( 0.298);
+        assertThat(data.getMax()).isEqualTo( 0.434);
+        assertThat(data.getOldest()).isEqualTo(LocalDate.parse("2023-04-20"));
+        assertThat(data.getNewest()).isEqualTo(LocalDate.parse("2023-04-20"));
+        assertThat(data.getRange()).isEqualTo(0.45637583892617456);
+        assertThat(data.getCurrency()).isEqualTo( "USD");
+    }
+
+    private static void assertSingleCryptoDataWithHighestRangeForADay(CryptoData data) {
+        assertThat(data.getCrypto()).isEqualTo( "BTC");
+        assertThat(data.getMin()).isEqualTo( 0.325);
+        assertThat(data.getMax()).isEqualTo( 0.325);
+        assertThat(data.getOldest()).isEqualTo(LocalDate.parse("2023-04-20"));
+        assertThat(data.getNewest()).isEqualTo(LocalDate.parse("2023-04-20"));
+        assertThat(data.getRange()).isEqualTo(0.0);
+        assertThat(data.getCurrency()).isEqualTo( "USD");
+    }
+
+    private HashMap<String, List<CryptoValue>> populateLoadedValuesForOneCrypto() {
         List<CryptoValue> values = new ArrayList<>() {{
             add(new CryptoValue(LocalDate.parse("2023-04-20"), Crypto.BTC, 0.325));
             add(new CryptoValue(LocalDate.parse("2023-03-31"), Crypto.BTC, 0.434));
@@ -65,13 +110,19 @@ public class CryptoServiceTest {
         }};
     }
 
-    @Test
-    public void whenCallingGetCryptoDataForOneCryptoReturnsRightCryptoData() {
-
-    }
-
-    @Test
-    public void getCryptoWithHighestRangeForDay() {
-
+    private HashMap<String, List<CryptoValue>> populateLoadedValuesForMoreCryptos() {
+        List<CryptoValue> valuesBTC = new ArrayList<>() {{
+            add(new CryptoValue(LocalDate.parse("2023-04-20"), Crypto.BTC, 0.325));
+            add(new CryptoValue(LocalDate.parse("2023-03-31"), Crypto.BTC, 0.434));
+            add(new CryptoValue(LocalDate.parse("2023-04-06"), Crypto.BTC, 0.298));
+        }};
+        List<CryptoValue> valuesETH = new ArrayList<>() {{
+            add(new CryptoValue(LocalDate.parse("2023-04-20"), Crypto.ETH, 1.012));
+            add(new CryptoValue(LocalDate.parse("2023-04-01"), Crypto.ETH, 0.999));
+        }};
+        return new HashMap<String, List<CryptoValue>>() {{
+            put("BTC", valuesBTC);
+            put("ETH", valuesETH);
+        }};
     }
 }

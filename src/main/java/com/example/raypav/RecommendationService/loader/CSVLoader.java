@@ -33,7 +33,9 @@ import java.util.List;
 @Component
 public class CSVLoader {
 
-    public HashMap<String, List<CryptoValue>> loadedValues;
+    private static final List<String> CRYPTO_NAME_LIST = Arrays.asList("BTC", "DOGE", "ETH", "LTC", "XRP");
+
+    private HashMap<String, List<CryptoValue>> loadedValues;
 
     public CSVLoader() {
         this.loadedValues = new HashMap<>();
@@ -42,7 +44,7 @@ public class CSVLoader {
     @PostConstruct
     public void init() throws IOException {
 
-        List<String> files = Arrays.asList("BTC", "DOGE", "ETH", "LTC", "XRP");
+        List<String> files = CRYPTO_NAME_LIST;
 
         for (String f : files) {
             loadDataFromFile(f);
