@@ -1,70 +1,68 @@
 package com.example.raypav.RecommendationService.service;
 
+import com.example.raypav.RecommendationService.loader.CSVLoader;
 import com.example.raypav.RecommendationService.model.CryptoData;
 import com.example.raypav.RecommendationService.model.CryptoValue;
-import com.example.raypav.RecommendationService.parser.CSVLoader;
-import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
 
+/*
+    CryptoService serves the information for the controller's endpoints.
+     Uses the csvLoader for current existing data.
+     For future improvements could use the data from a DB.
+ */
+
+@Data
 @Service
-@AllArgsConstructor
 public class CryptoService {
 
+    public static final String USD = "USD";
     @Autowired
     private CSVLoader csvLoader;
 
-    private List<CryptoData> cryptoData;
-
     public List<CryptoData> getAllCryptoData() {
-        HashMap<String, List<CryptoValue>> loadedValues = csvLoader.loadedValues;
-        populateCryptoDataFromLoadedValues(loadedValues);
+        HashMap<String, List<CryptoValue>> loadedValues = csvLoader.getLoadedValues();
+        List<CryptoData> cryptoData = calculateAllData(loadedValues);
         Objects.requireNonNull(cryptoData).sort(CryptoData.RangeComparator);
         return cryptoData;
     }
 
-    public CryptoData getCryptoData(String name) {
-        HashMap<String, List<CryptoValue>> loadedValues = csvLoader.loadedValues;
-        populateCryptoDataFromLoadedValues(loadedValues);
-        return cryptoData
-                .stream()
-                .filter(cryptoData1 -> cryptoData1.getCrypto().equals(name))
-                .findFirst().orElse(null);
+    public CryptoData getCryptoDataForOneCrypto(String name) {
+        HashMap<String, List<CryptoValue>> loadedValues = csvLoader.getLoadedValues();
+        return populateDateForOneCrypto(name, loadedValues.get(name));
     }
 
     public CryptoData getCryptoWithHighestRangeForDay(String date) {
-        HashMap<String, List<CryptoValue>> loadedValues = csvLoader.loadedValues;
+        HashMap<String, List<CryptoValue>> loadedValues = csvLoader.getLoadedValues();
         List<CryptoData> dataForDay = calculateDataForADay(loadedValues, LocalDate.parse(date));
         Objects.requireNonNull(dataForDay).sort(CryptoData.RangeComparator);
         return dataForDay.get(0);
     }
 
-    private void populateCryptoDataFromLoadedValues(HashMap<String, List<CryptoValue>> loadedValues) {
-        if (cryptoData.isEmpty()){
-            cryptoData = calculateAllData(loadedValues);
-        }
-    }
-
     private List<CryptoData> calculateAllData(HashMap<String, List<CryptoValue>> loadedValues) {
         List<CryptoData> dataForAllCryptos = new ArrayList<>();
         for (Map.Entry<String, List<CryptoValue>> oneCryptoValues : loadedValues.entrySet()) {
-            List<CryptoValue> values = oneCryptoValues.getValue();
-            CryptoData data = new CryptoData();
-            values.sort(CryptoValue.TimeComparator);
-            data.setNewest(values.get(0).getTimestamp());
-            data.setOldest(values.get(values.size() - 1).getTimestamp());
-            values.sort(CryptoValue.PriceComparator);
-            data.setCrypto(oneCryptoValues.getKey());
-            data.setMax(values.get(0).getPrice());
-            data.setMin(values.get(values.size() - 1).getPrice());
-            data.setRange(calculateRange(data.getMin(), data.getMax()));
-            data.setCurrency("USD");
-            dataForAllCryptos.add(data);
+            dataForAllCryptos.add(populateDateForOneCrypto(oneCryptoValues.getKey(), oneCryptoValues.getValue()));
         }
         return dataForAllCryptos;
+    }
+
+    private CryptoData populateDateForOneCrypto(String cryptoName, List<CryptoValue> oneCryptoValues) {
+        CryptoData data = new CryptoData();
+        oneCryptoValues.sort(CryptoValue.TimeComparator);
+        data.setNewest(oneCryptoValues.get(0).getTimestamp());
+        data.setOldest(oneCryptoValues.get(oneCryptoValues.size() - 1).getTimestamp());
+        oneCryptoValues.sort(CryptoValue.PriceComparator);
+        data.setCrypto(cryptoName);
+        data.setMax(oneCryptoValues.get(0).getPrice());
+        data.setMin(oneCryptoValues.get(oneCryptoValues.size() - 1).getPrice());
+        data.setRange(calculateRange(data.getMin(), data.getMax()));
+        data.setCurrency(USD);
+        return data;
     }
 
     private Double calculateRange(Double min, Double max) {
@@ -78,17 +76,7 @@ public class CryptoService {
                     .stream()
                     .filter(cryptoValue -> cryptoValue.getTimestamp().equals(date))
                     .toList());
-            CryptoData data = new CryptoData();
-            values.sort(CryptoValue.TimeComparator);
-            data.setNewest(values.get(0).getTimestamp());
-            data.setOldest(values.get(values.size() - 1).getTimestamp());
-            values.sort(CryptoValue.PriceComparator);
-            data.setCrypto(oneCryptoValues.getKey());
-            data.setMax(values.get(0).getPrice());
-            data.setMin(values.get(values.size() - 1).getPrice());
-            data.setRange(calculateRange(data.getMin(), data.getMax()));
-            data.setCurrency("USD");
-            dataForAllCryptos.add(data);
+            dataForAllCryptos.add(populateDateForOneCrypto(oneCryptoValues.getKey(), values));
         }
         return dataForAllCryptos;
     }

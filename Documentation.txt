@@ -1,0 +1,42 @@
+RecommendationService
+Collection for the currently existing endpoints of Recommendation service for cryptos.
+
+GET
+getAllCryptos
+http://localhost:8080/recommendations
+Returns information for existing cryptos about the oldest/ newest date, max/ min price, currency, range = (max - min) / min, in descending order by range. Get request with no parameters needs.
+
+URL: http://localhost:8080/recommendations
+
+Responce example:
+
+[ { "crypto": "ETH", "oldest": "2022-01-01", "newest": "2022-01-31", "min": 2336.52, "max": 3828.11, "range": 0.6383810110763016, "currency": "USD" }, { "crypto": "XRP", "oldest": "2022-01-01", "newest": "2022-01-31", "min": 0.5616, "max": 0.8458, "range": 0.5060541310541311, "currency": "USD" }, { "crypto": "DOGE", "oldest": "2022-01-01", "newest": "2022-01-31", "min": 0.129, "max": 0.1941, "range": 0.5046511627906975, "currency": "USD" }, { "crypto": "LTC", "oldest": "2022-01-01", "newest": "2022-01-31", "min": 103.4, "max": 151.5, "range": 0.4651837524177949, "currency": "USD" }, { "crypto": "BTC", "oldest": "2022-01-01", "newest": "2022-01-31", "min": 33276.59, "max": 47722.66, "range": 0.43412110435594536, "currency": "USD" }]
+
+
+GET
+getSingleCryptoRecommendations
+http://localhost:8080/recommendations/BTC
+Returns information for a single crypto about the oldest/ newest date, max/ min price, currency, range = (max - min) / min. Get request with parameter for the name of the crypto, accepts the name with small or capital letters.
+
+URL: http://localhost:8080/recommendations/{crypto}
+
+Responce example:
+
+StartFragment
+
+{ "crypto": "BTC", "oldest": "2022-01-01", "newest": "2022-01-31", "min": 33276.59, "max": 47722.66, "range": 0.43412110435594536, "currency": "USD"}
+
+
+
+GET
+getCryptoWithHighestRangeForADay
+http://localhost:8080/recommendations/date/2022-01-10
+StartFragment
+
+Returns information for a the crypto with highest range for a day (oldest/ newest date, max/ min price, currency, range = (max - min) / min). Get request with parameter for the date, accepts the date in such format "YYYY-MM-DD".
+
+URL: http://localhost:8080/recommendations/date/{date}
+
+Responce example:
+
+{ "crypto": "XRP", "oldest": "2022-01-10", "newest": "2022-01-10", "min": 0.7226, "max": 0.7507, "range": 0.03888735123166345, "currency": "USD"}

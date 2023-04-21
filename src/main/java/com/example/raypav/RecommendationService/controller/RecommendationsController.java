@@ -13,9 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/*
+    RecommendationsController is the entering point of the service with three endpoints.
+ */
+
 @RestController
 @RequestMapping("/recommendations")
-public class RecommendationController {
+public class RecommendationsController {
 
     @Autowired
     private CryptoService cryptoService;
@@ -31,7 +35,7 @@ public class RecommendationController {
         if (!EnumUtils.isValidEnum(Crypto.class, cryptoToUpperCase)){
             throw new NotFoundException("No data for the crypto " + crypto);
         }
-        return cryptoService.getCryptoData(cryptoToUpperCase);
+        return cryptoService.getCryptoDataForOneCrypto(cryptoToUpperCase);
     }
 
     @GetMapping("/date/{date}")

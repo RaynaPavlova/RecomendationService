@@ -1,0 +1,94 @@
+{
+	"info": {
+		"_postman_id": "87684dbf-4795-4992-ad78-dcb6300b98a6",
+		"name": "RecommendationService",
+		"description": "Collection for the currently existing endpoints of Recommendation service for cryptos.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6363361"
+	},
+	"item": [
+		{
+			"name": "getAllCryptos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/recommendations",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"recommendations"
+					]
+				},
+				"description": "Returns information for existing cryptos about the oldest/ newest date, max/ min price, currency, range = (max - min) / min, in descending order by range. Get request with no parameters needs.\n\nURL: [http://localhost:8080/recommendations](http://localhost:8080/recommendationsResponce)\n\n[Responce](http://localhost:8080/recommendationsResponce) example:\n\n\\[ { \"crypto\": \"ETH\", \"oldest\": \"2022-01-01\", \"newest\": \"2022-01-31\", \"min\": 2336.52, \"max\": 3828.11, \"range\": 0.6383810110763016, \"currency\": \"USD\" }, { \"crypto\": \"XRP\", \"oldest\": \"2022-01-01\", \"newest\": \"2022-01-31\", \"min\": 0.5616, \"max\": 0.8458, \"range\": 0.5060541310541311, \"currency\": \"USD\" }, { \"crypto\": \"DOGE\", \"oldest\": \"2022-01-01\", \"newest\": \"2022-01-31\", \"min\": 0.129, \"max\": 0.1941, \"range\": 0.5046511627906975, \"currency\": \"USD\" }, { \"crypto\": \"LTC\", \"oldest\": \"2022-01-01\", \"newest\": \"2022-01-31\", \"min\": 103.4, \"max\": 151.5, \"range\": 0.4651837524177949, \"currency\": \"USD\" }, { \"crypto\": \"BTC\", \"oldest\": \"2022-01-01\", \"newest\": \"2022-01-31\", \"min\": 33276.59, \"max\": 47722.66, \"range\": 0.43412110435594536, \"currency\": \"USD\" }\\]"
+			},
+			"response": [
+				{
+					"name": "getAll",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080"
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": [],
+					"cookie": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "getSingleCryptoRecommendations",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/recommendations/BTC",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"recommendations",
+						"BTC"
+					]
+				},
+				"description": "Returns information for a single crypto about the oldest/ newest date, max/ min price, currency, range = (max - min) / min. Get request with parameter for the name of the crypto, accepts the name with small or capital letters.\n\nURL: [http://localhost:8080/recommendations](http://localhost:8080/recommendationsResponce)/{crypto}\n\n[Responce](http://localhost:8080/recommendationsResponce) example:\n\nStartFragment\n\n{    \"crypto\": \"BTC\",    \"oldest\": \"2022-01-01\",    \"newest\": \"2022-01-31\",    \"min\": 33276.59,    \"max\": 47722.66,    \"range\": 0.43412110435594536,    \"currency\": \"USD\"}\n\nEndFragment"
+			},
+			"response": []
+		},
+		{
+			"name": "getCryptoWithHighestRangeForADay",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/recommendations/date/2022-01-10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"recommendations",
+						"date",
+						"2022-01-10"
+					]
+				},
+				"description": "StartFragment\n\nReturns information for a the crypto with highest range for a day (oldest/ newest date, max/ min price, currency, range = (max - min) / min). Get request with parameter for the date, accepts the date in such format \"YYYY-MM-DD\".\n\nURL: [http://localhost:8080/recommendations](http://localhost:8080/recommendationsResponce)/date/{date}\n\n[Responce](http://localhost:8080/recommendationsResponce) example:\n\nStartFragment\n\nStartFragment\n\n{    \"crypto\": \"XRP\",    \"oldest\": \"2022-01-10\",    \"newest\": \"2022-01-10\",    \"min\": 0.7226,    \"max\": 0.7507,    \"range\": 0.03888735123166345,    \"currency\": \"USD\"}\n\nEndFragment"
+			},
+			"response": []
+		}
+	]
+}

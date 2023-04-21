@@ -1,8 +1,9 @@
-package com.example.raypav.RecommendationService.parser;
+package com.example.raypav.RecommendationService.loader;
 
 import com.example.raypav.RecommendationService.model.Crypto;
 import com.example.raypav.RecommendationService.model.CryptoValue;
 import jakarta.annotation.PostConstruct;
+import lombok.Data;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.core.io.ClassPathResource;
@@ -22,6 +23,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+/*
+    CSVLoader loads the data from existing files in resources/data.
+    Loading happens in init() the component.
+    For future improvements reading the data should be changed
+    to be collected from external services and save the data in a DB.
+ */
+@Data
 @Component
 public class CSVLoader {
 
@@ -43,7 +51,7 @@ public class CSVLoader {
 
     public void loadDataFromFile(String f) throws IOException {
 
-        ClassPathResource resource = new ClassPathResource("data/" + f + "_values.csv"); //check file's not empty
+        ClassPathResource resource = new ClassPathResource("data/" + f + "_values.csv"); //TO DO check file's not empty
         InputStream inputStream = resource.getInputStream();
         BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
@@ -55,14 +63,18 @@ public class CSVLoader {
                     convertTimestampToLocalDate(csvRecord.get("timestamp")),
                     Crypto.forValue(csvRecord.get("symbol")),
                     Double.parseDouble(csvRecord.get("price")));
-            if (!value.getName().getValue().equals("UNKNOWN")) {
-                fileValues.add(value);
-            }
+            checkIfCryptoIsKnown(fileValues, value);
         }
         loadedValues.put(f, fileValues);
     }
 
-    private static LocalDate convertTimestampToLocalDate(String stringTimestamp) {
+    private static void checkIfCryptoIsKnown(List<CryptoValue> fileValues, CryptoValue value) {
+        if (!value.getName().getValue().equals("UNKNOWN")) {
+            fileValues.add(value);
+        }
+    }
+
+    private LocalDate convertTimestampToLocalDate(String stringTimestamp) {
         return LocalDateTime
                 .ofInstant(Instant.ofEpochMilli(Long.parseLong(stringTimestamp)), ZoneId.systemDefault())
                 .toLocalDate();
